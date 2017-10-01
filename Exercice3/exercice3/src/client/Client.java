@@ -16,8 +16,8 @@ public class Client
     public static void main(String arg[]){
 	try{
 		CompteFactory h=(CompteFactory)Naming.lookup("compteFactory");
-		Compte c=h.getCompte(1);
-		System.out.println("Compte recu, solde :"c.getSolde);
+		double s=h.getCompte(1).getSolde();
+		System.out.println("Compte recu, solde :"+s);
 	}
 	catch (Exception e){System.err.println("Erreur :"+e);}
 	}
