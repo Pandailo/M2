@@ -5,14 +5,18 @@
  */
 package exercice3;
 
+import java.rmi.Remote;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 
 /**
  *
  * @author Yann
  */
-public interface CompteFactory extends UnicastRemoteObject
+public interface CompteFactory extends Remote
 {
-    public Compte getCompte(int num);
-    public Compte createCompte(int num,Connection con);
+    public CompteFactory();
+    public Compte getCompte(int num) throws RemoteException;
+    public Compte createCompte(int num,Connection con) throws RemoteException;
 }
