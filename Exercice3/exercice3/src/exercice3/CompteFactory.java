@@ -11,11 +11,8 @@ import java.sql.Connection;
  *
  * @author Yann
  */
-public abstract class CompteFactory
+public interface CompteFactory
 {
-    public Compte getCompte(int num,Connection con)
-    {
-        return createCompte(num,con);
-    }
-    protected abstract Compte createCompte(int num,Connection con);
+    public Compte getCompte(int num,Connection con);
+    public Compte createCompte(int num,Connection con);
 }
