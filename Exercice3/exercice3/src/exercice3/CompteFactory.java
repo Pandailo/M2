@@ -16,7 +16,6 @@ import java.sql.Connection;
  */
 public interface CompteFactory extends Remote
 {
-    public CompteFactory();
     public Compte getCompte(int num) throws RemoteException;
     public Compte createCompte(int num,Connection con) throws RemoteException;
 }

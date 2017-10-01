@@ -5,11 +5,13 @@
  */
 package exercice3;
 
+import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Hashtable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -19,7 +21,8 @@ import java.util.logging.Logger;
  */
 public class ImplCompteFactory extends UnicastRemoteObject implements CompteFactory 
 {
-   Connection con;
+    Connection con;
+    Hashtable<Integer, Compte> comptes    = new Hashtable<Integer, Compte>();
     protected static final String LOGIN ="yv965015";
     protected static final String PASS ="yv965015";
     protected static final String URLFAC ="jdbc:oracle:thin:@butor:1521:ensb2016";
@@ -65,21 +68,34 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
         {
             Logger.getLogger(ImplCompteFactory.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return new Compte(num,con);
+        Compte c = new Compte(num,con);
+        comptes.put(num, c);
+        return c;
     }
 
     @Override
-    public Compte getCompte(int num)
+    public Compte getCompte(int num) throws RemoteException
     {
         
-        /* 
-        ---- ALLER CHERCHER COMPTE SUR REMOTEFACTORY
-        */return new Compte();
+       if(comptes.contains(num)){
+           return comptes.get(num);
+       }
+       else{
+           return createCompte(num,con);
+       }
     }
     public ImplCompteFactory() throws SQLException, RemoteException, ClassNotFoundException
     {
         initCo();
     }
+    public static void main(String arg[]){
+	try{
+		CompteFactory s=new ImplCompteFactory();
+		String nom="CompteFactory";
+		Naming.rebind(nom,s); // enregistrement
+		System.out.println("Serveur enregistre");
+	}
+	catch (Exception e){System.err.println("Erreur :"+e);}
+	}
 
-   
 }

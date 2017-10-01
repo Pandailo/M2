@@ -5,11 +5,20 @@
  */
 package client;
 
+import java.rmi.Naming;
+
 /**
  *
  * @author Yann
  */
 public class Client
 {
-    /* blblblb*/
+    public static void main(String arg[]){
+	try{
+		CompteFactory h=(CompteFactory)Naming.lookup("compteFactory");
+		Compte c=h.getCompte(1);
+		System.out.println("Compte recu, solde :"c.getSolde);
+	}
+	catch (Exception e){System.err.println("Erreur :"+e);}
+	}
 }
