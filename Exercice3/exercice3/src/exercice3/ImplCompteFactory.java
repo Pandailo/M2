@@ -6,22 +6,71 @@
 package exercice3;
 
 import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
  * @author Yann
  */
-public class ImplCompteFactory implements CompteFactory
+public class ImplCompteFactory extends UnicastRemoteObject implements CompteFactory 
 {
+   Connection con;
+    protected static final String LOGIN ="yv965015";
+    protected static final String PASS ="yv965015";
+    protected static final String URLFAC ="jdbc:oracle:thin:@butor:1521:ensb2016";
+    protected static final String URLDIST="jdbc:oracle:thin:@ufrsciencestech.u-bourgogne.fr:25559 :ensb2016";
+
+    
+    private void initCo() throws SQLException, ClassNotFoundException
+    {
+        Connection con=null;
+        try 
+        {
+                con=getConnexion(URLFAC);
+        } 
+        catch (SQLException ex) 
+        {
+                con=getConnexion(URLDIST);
+        } 
+         catch (ClassNotFoundException ex)
+        {
+            Logger.getLogger(ImplCompteFactory.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        this.con= con;
+    }
+     private static Connection getConnexion(String url) throws SQLException, ClassNotFoundException
+    {
+        Connection con=null;
+        Class.forName("oracle.jdbc.driver.OracleDriver");
+        con = DriverManager.getConnection(url, LOGIN, PASS);
+        return con;
+    }
     public Compte createCompte(int num,Connection con){
+        try
+        {
+            this.initCo();
+            
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(ImplCompteFactory.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (ClassNotFoundException ex)
+        {
+            Logger.getLogger(ImplCompteFactory.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return new Compte(num,con);
     }
 
     @Override
-    public Compte getCompte(int num, Connection con)
+    public Compte getCompte(int num)
     {
-        /* des trucs
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        /* 
+        ---- ALLER CHERCHER COMPTE SUR REMOTEFACTORY
         */return new Compte();
     }
 }

@@ -3,16 +3,13 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package exercice3;
-
-import java.sql.Connection;
+package client;
 
 /**
  *
  * @author Yann
  */
-public interface CompteFactory extends UnicastRemoteObject
+public class Client
 {
-    public Compte getCompte(int num);
-    public Compte createCompte(int num,Connection con);
+    /* blblblb*/
 }
