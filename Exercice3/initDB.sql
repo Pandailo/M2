@@ -95,3 +95,11 @@ BEGIN
 		END IF;
 END;
 /
+CREATE OR REPLACE FUNCTION createAccount(newSolde IN accounts.solde%TYPE) RETURN NUMBER
+AS
+v_id accounts.solde%TYPE;
+BEGIN
+	INSERT INTO Accounts(solde) values(NewSolde) returning id into v_id;
+	RETURN v_id;
+END;
+/

@@ -8,6 +8,7 @@ import java.rmi.Remote;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
+import java.util.List;
 
 /**
  *
@@ -15,7 +16,11 @@ import java.sql.Connection;
  */
 public interface CompteFactory extends Remote
 {
-    public Compte getCompte(int num) throws RemoteException;
-    public Compte createCompte(int num,Connection con) throws RemoteException;
+    public void getCompte(int num) throws RemoteException;
+    public void depot(int idc,double somme) throws RemoteException;
+    public void retrait(int idc,double somme) throws RemoteException;
+    public double getSolde(int idc) throws RemoteException;
+    public List getOperations(int idc) throws RemoteException;
+    public int createAccount(double solde)throws RemoteException;
 }
 

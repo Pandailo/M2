@@ -9,16 +9,18 @@ package exercice3;
  *
  * @author Yann
  */
+import comptefactory.CompteFactory;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+
 public class  Serveur {
 public static void main( String []args) {
         try{
                 CompteFactory compteFactory = new ImplCompteFactory();
-                // Registry  registry = LocateRegistry.createRegistry (1099);
-                Registry registry = LocateRegistry.getRegistry();
+                 Registry  registry = LocateRegistry.createRegistry (1099);
+                //Registry registry = LocateRegistry.getRegistry();
                 registry.bind("compteFactory",compteFactory);
                 System.out.println("Serveur pret"); 
         }
