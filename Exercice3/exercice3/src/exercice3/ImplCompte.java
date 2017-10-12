@@ -6,9 +6,8 @@
 package exercice3;
 
 import Interfaces.Compte;
-import Utils.ConnexionUtils;
-import static com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table;
 import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -26,13 +25,13 @@ import oracle.jdbc.OracleResultSet;
  *
  * @author yv965015
  */
-public class ImplCompte implements Compte
+public class ImplCompte extends UnicastRemoteObject implements Compte
 {
     private int accountId;
     private double solde;
     private Connection con;
 
-    public ImplCompte(int accountId,Connection con)
+    public ImplCompte(int accountId,Connection con) throws RemoteException
     {
         this.accountId = accountId;
         this.con = con;
@@ -46,7 +45,8 @@ public class ImplCompte implements Compte
             {
                 this.solde = rs.getDouble(1);
             }
-            
+            rs.close();
+            st.close();
         }
         catch (SQLException ex)
         {
@@ -54,27 +54,27 @@ public class ImplCompte implements Compte
         }
     }
 
-    public ImplCompte()
+    public ImplCompte() throws RemoteException
     {
     }
 
-    public ImplCompte(int accountId)
+    public ImplCompte(int accountId) throws RemoteException
     {
         this.accountId = accountId;
     }
 
-    public ImplCompte(Connection con)
+    public ImplCompte(Connection con) throws RemoteException
     {
         this.con = con;
     }
 
-    public ImplCompte(double solde)
+    public ImplCompte(double solde) throws RemoteException
     {
         this.solde = solde;
     }
 
     @Override
-    public int getAccountId()
+    public int getAccountId() 
     {
         return accountId;
     }
@@ -92,12 +92,6 @@ public class ImplCompte implements Compte
     }
 
     @Override
-    public Connection getCon()
-    {
-        return con;
-    }
-
-    @Override
     public void setAccountId(int accountId)
     {
         this.accountId = accountId;
@@ -108,7 +102,7 @@ public class ImplCompte implements Compte
         int accountId=this.getAccountId();
         if("depot"==type){
             try {
-                OraclePreparedStatement st=(OraclePreparedStatement)this.getCon().prepareStatement("call operation(?,?,?)");
+                OraclePreparedStatement st=(OraclePreparedStatement)this.con.prepareStatement("call operation(?,?,?)");
                 st.setInt(1,accountId);
                 st.setDouble(2,montant);
                 st.setString(3,type);
@@ -122,7 +116,7 @@ public class ImplCompte implements Compte
         }
         else if("retrait"==type){
                 try {
-                OraclePreparedStatement st=(OraclePreparedStatement)this.getCon().prepareStatement("call operation(?,?,?)");
+                OraclePreparedStatement st=(OraclePreparedStatement)this.con.prepareStatement("call operation(?,?,?)");
                 st.setInt(1,accountId);
                 st.setDouble(2,montant);
                 st.setString(3,type);
@@ -138,19 +132,27 @@ public class ImplCompte implements Compte
         }
     }
     @Override
-    public List getOperations() throws SQLException{
+    public List getOperations() {
         List<String> operations = new ArrayList();
-        PreparedStatement st = (PreparedStatement)con.prepareStatement("select type,montant,createdDate from operations where accountId = ?"); 
-        st.setInt(1, this.accountId);
-        ResultSet rs = (ResultSet) st.executeQuery();
-        String s="";
-        while(rs.next())
+        try
         {
-            s="";
-            s+=rs.getString(1)+" ";
-            s+= rs.getDouble(2)+" " ;
-            s+= rs.getDate(3)+" ";
-            operations.add(s+"\n");
+            
+            PreparedStatement st = (PreparedStatement)con.prepareStatement("select type,montant,createdDate from operations where accountId = ?");
+            st.setInt(1, this.accountId);
+            ResultSet rs = (ResultSet) st.executeQuery();
+            String s="";
+            while(rs.next())
+            {
+                s="";
+                s+=rs.getString(1)+" ";
+                s+= rs.getDouble(2)+" " ;
+                s+= rs.getDate(3)+" ";
+                operations.add(s+"\n");
+            }
+        }
+        catch (SQLException ex)
+        {
+            Logger.getLogger(ImplCompte.class.getName()).log(Level.SEVERE, null, ex);
         }
         return operations;
     }
@@ -158,7 +160,7 @@ public class ImplCompte implements Compte
     public int createAccount(double solde){
         int accountId = -1;
         CallableStatement st;
-        Connection con=this.getCon();
+        Connection con=this.con;
         try
         {
             st = (CallableStatement)con.prepareCall("{?=call createAccount(?)}"); 

@@ -10,10 +10,12 @@ package exercice3;
  * @author Yann
  */
 import Interfaces.CompteFactory;
+import java.rmi.AlreadyBoundException;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
 
 public class  Serveur {
 public static void main( String []args) {
@@ -24,6 +26,8 @@ public static void main( String []args) {
                 registry.bind("compteFactory",compteFactory);
                 System.out.println("Serveur pret"); 
         }
-        catch(Exception e){System.out.println(e);}
+        catch(ClassNotFoundException | AlreadyBoundException | RemoteException | SQLException e){
+            System.out.println(e);
+        }
     }
 }

@@ -3,9 +3,9 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home4/yv965015/VERON/M2/S1/BDED/TP/Exercice3/exercice3/src/Utils/ConnexionUtils.java</file>
-            <file>file:/home4/yv965015/VERON/M2/S1/BDED/TP/Exercice3/exercice3/src/exercice3/Exercice3.java</file>
-            <file>file:/home4/yv965015/VERON/M2/S1/BDED/TP/Exercice3/exercice3/src/exercice3/Compte.java</file>
+            <file>file:/home4/yv965015/VERON/M2/S1/BDED/TP/Exercice3/exercice3/src/exercice3/Serveur.java</file>
+            <file>file:/home4/yv965015/VERON/M2/S1/BDED/TP/Exercice3/exercice3/src/exercice3/ImplCompte.java</file>
+            <file>file:/home4/yv965015/VERON/M2/S1/BDED/TP/Exercice3/exercice3/src/exercice3/ImplCompteFactory.java</file>
         </group>
     </open-files>
 </project-private>

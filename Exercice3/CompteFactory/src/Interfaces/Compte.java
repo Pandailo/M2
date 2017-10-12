@@ -5,24 +5,22 @@
  */
 package Interfaces;
 
+import java.io.Serializable;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 /**
  *
  * @author yv965015
  */
-public interface Compte extends Remote
+public interface Compte extends Remote,Serializable
 {
     public int getAccountId()throws RemoteException;
     public double getSolde()throws RemoteException;
     public void setSolde(double solde)throws RemoteException;
-    public Connection getCon()throws RemoteException;
     public void setAccountId(int accountId) throws RemoteException;
-    public List getOperations() throws SQLException, RemoteException;
+    public List getOperations() throws RemoteException;
     public int createAccount(double solde)throws RemoteException;
     public void depot(double somme)throws RemoteException;
     public void retrait(double somme)throws RemoteException;

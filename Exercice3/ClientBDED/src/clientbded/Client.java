@@ -5,9 +5,12 @@
  */
 package clientbded;
 
-import comptefactory.CompteFactory;
-import java.rmi.Naming;
-import java.util.List;
+import Interfaces.CompteFactory;
+import Interfaces.Compte;
+import java.rmi.NotBoundException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 
 /**
  *
@@ -17,30 +20,30 @@ public class Client
 {
     public static void main(String arg[]){
 	try{
-		CompteFactory h=(CompteFactory)Naming.lookup("compteFactory");
-		double s=h.getSolde(1);
-		System.out.println("Compte recu, solde :"+s);
-                h.depot(1,200);
-                s=h.getSolde(1);
-		System.out.println("Compte recu, depot effectue de 200, solde :"+s);
-                h.retrait(1,400);
-                s=h.getSolde(1);
-		System.out.println("Compte recu, retrait effectue de 400,solde :"+s);
+                Registry registry = LocateRegistry.getRegistry("localhost",1099);
+		CompteFactory cf=(CompteFactory)registry.lookup("compteFactory");
+		Compte c=cf.getCompte(1);
+		System.out.println("Compte recu, solde :"+c.getSolde());
+                c.depot(200);
+		System.out.println("Compte recu, depot effectue de 200, solde :"+c.getSolde());
+                c.retrait(400);
+		System.out.println("Compte recu, retrait effectue de 400,solde :"+c.getSolde());
                /* 
-                List ope=h.getOperations(1);
+                List ope=cf.getOperations(1);
                 for(int i = 0;i<ope.size();i++){
                     System.out.println("Operation "+i+" : "+ope.get(i)+"\n");
                 }
                 */
-                int num=h.createAccount(2000);
+                int num=cf.createAccount(2000);
+                Compte c2=cf.getCompte(1);
 		System.out.println("Compte créé, id  :"+num);
-                h.depot(num,200);
-                s=h.getSolde(num);
-		System.out.println("Compte recu, depot effectue de 200, solde :"+s);
-                h.retrait(num,400);
-                s=h.getSolde(num);
-		System.out.println("Compte recu, retrait effectue de 400,solde :"+s);
+                c2.depot(200);
+		System.out.println("Compte recu, depot effectue de 200, solde :"+c2.getSolde());
+                c2.retrait(400);
+		System.out.println("Compte recu, retrait effectue de 400,solde :"+c2.getSolde());
 	}
-	catch (Exception e){System.err.println("Erreur :"+e);}
-	}
+	catch (NotBoundException | RemoteException e){
+            System.err.println("Erreur :"+e);
+        }
+    }
 }
