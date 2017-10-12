@@ -5,8 +5,10 @@
  */
 package exercice3;
 
+import Interfaces.Compte;
 import Utils.ConnexionUtils;
 import static com.sun.xml.internal.fastinfoset.alphabet.BuiltInRestrictedAlphabets.table;
+import java.rmi.RemoteException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,13 +26,13 @@ import oracle.jdbc.OracleResultSet;
  *
  * @author yv965015
  */
-public class Compte
+public class ImplCompte implements Compte
 {
     private int accountId;
     private double solde;
     private Connection con;
 
-    public Compte(int accountId,Connection con)
+    public ImplCompte(int accountId,Connection con)
     {
         this.accountId = accountId;
         this.con = con;
@@ -48,54 +50,59 @@ public class Compte
         }
         catch (SQLException ex)
         {
-            Logger.getLogger(Compte.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ImplCompte.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
-    public Compte()
+    public ImplCompte()
     {
     }
 
-    public Compte(int accountId)
+    public ImplCompte(int accountId)
     {
         this.accountId = accountId;
     }
 
-    public Compte(Connection con)
+    public ImplCompte(Connection con)
     {
         this.con = con;
     }
 
-    public Compte(double solde)
+    public ImplCompte(double solde)
     {
         this.solde = solde;
     }
 
+    @Override
     public int getAccountId()
     {
         return accountId;
     }
 
+    @Override
     public double getSolde()
     {
         return solde;
     }
 
+    @Override
     public void setSolde(double solde)
     {
         this.solde = solde;
     }
 
+    @Override
     public Connection getCon()
     {
         return con;
     }
 
+    @Override
     public void setAccountId(int accountId)
     {
         this.accountId = accountId;
     }
-    
+
     public void operation(double montant,String type)
     {
         int accountId=this.getAccountId();
@@ -109,7 +116,7 @@ public class Compte
                 this.setSolde(this.getSolde()+montant);
             }
             catch (SQLException ex) {
-                Logger.getLogger(Compte.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ImplCompte.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }
@@ -123,17 +130,18 @@ public class Compte
                 this.setSolde(this.getSolde()-montant);
             }
             catch (SQLException ex) {
-                Logger.getLogger(Compte.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(ImplCompte.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
         else{
             System.out.println("Operation doit être de type retrait ou depot. Aucun autre type ne saurait être accepté, vous avez entré :"+type);
         }
     }
-    public List getOperations(int acId) throws SQLException{
+    @Override
+    public List getOperations() throws SQLException{
         List<String> operations = new ArrayList();
         PreparedStatement st = (PreparedStatement)con.prepareStatement("select type,montant,createdDate from operations where accountId = ?"); 
-        st.setInt(1, accountId);
+        st.setInt(1, this.accountId);
         ResultSet rs = (ResultSet) st.executeQuery();
         String s="";
         while(rs.next())
@@ -146,6 +154,7 @@ public class Compte
         }
         return operations;
     }
+    @Override
     public int createAccount(double solde){
         int accountId = -1;
         CallableStatement st;
@@ -162,9 +171,20 @@ public class Compte
         }
         catch (SQLException ex)
         {
-            Logger.getLogger(Compte.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ImplCompte.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         return accountId;
     }
+    @Override
+    public void depot(double somme)
+    {
+        this.operation(somme, "depot");
+       
+    }
+    @Override
+    public void retrait(double somme){
+        this.operation(somme, "retrait");
+    }
+
 }

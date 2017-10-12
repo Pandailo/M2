@@ -5,7 +5,8 @@
  */
 package exercice3;
 
-import comptefactory.CompteFactory;
+import Interfaces.Compte;
+import Interfaces.CompteFactory;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -25,7 +26,7 @@ import java.util.logging.Logger;
 public class ImplCompteFactory extends UnicastRemoteObject implements CompteFactory 
 {
     Connection con;
-    Hashtable<Integer, Compte> comptes    = new Hashtable<Integer, Compte>();
+    Hashtable<Integer, ImplCompte> comptes    = new Hashtable<Integer, ImplCompte>();
     protected static final String LOGIN ="yv965015";
     protected static final String PASS ="yv965015";
     protected static final String URLFAC ="jdbc:oracle:thin:@eluard:1521:ense2017";
@@ -75,122 +76,25 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
         {
             Logger.getLogger(ImplCompteFactory.class.getName()).log(Level.SEVERE, null, ex);
         }
-        Compte c = new Compte(num,con);
+        ImplCompte c = new ImplCompte(num,con);
         comptes.put(num, c);
         return c;
     }
 
     @Override
-    public void getCompte(int num) throws RemoteException
+    public Compte getCompte(int num) throws RemoteException
     {
         
        if(!comptes.containsKey(num)){
            createCompte(num,con);
        }
+       return comptes.get(num);
     }
-    @Override
-    public void depot(int idc, double somme)
-    {
-         
-       if(comptes.containsKey(idc)){
-            Compte c=this.comptes.get(idc);
-            c.operation(somme, "depot");
-       }
-       else{
-           try
-           {
-               createCompte(idc,con);
-               Compte c=this.comptes.get(idc);
-               c.operation(somme, "depot");
-           }
-           catch (RemoteException ex)
-           {
-               Logger.getLogger(ImplCompteFactory.class.getName()).log(Level.SEVERE, null, ex);
-           }
-           
-       }
-    }
-
-    @Override
-    public void retrait(int idc, double somme)
-    {
-        if(comptes.containsKey(idc)){
-            Compte c=this.comptes.get(idc);
-            c.operation(somme, "retrait");
-       }
-       else{
-           try
-           {
-               createCompte(idc,con);
-               Compte c=this.comptes.get(idc);
-               c.operation(somme, "retrait");
-           }
-           catch (RemoteException ex)
-           {
-               Logger.getLogger(ImplCompteFactory.class.getName()).log(Level.SEVERE, null, ex);
-           }
-           
-       }
-    }
-
-    @Override
-    public double getSolde(int idc)
-    {
-        if(comptes.containsKey(idc)){
-            Compte c=this.comptes.get(idc);
-            return c.getSolde();
-       }
-       else{
-           try
-           {
-               createCompte(idc,con);
-                Compte c=this.comptes.get(idc);
-                return c.getSolde();
-           }
-           catch (RemoteException ex)
-           {
-               Logger.getLogger(ImplCompteFactory.class.getName()).log(Level.SEVERE, null, ex);
-           }
-           
-       }
-        return 0.0;
-    }
-
-    @Override
-    public List getOperations(int idc)
-    {
-        List ope=new ArrayList();
-         if(comptes.containsKey(idc)){
-            try {
-                Compte c=this.comptes.get(idc);
-                return c.getOperations(idc);
-            }
-            catch (SQLException ex) {
-                Logger.getLogger(ImplCompteFactory.class.getName()).log(Level.SEVERE, null, ex);
-            }
-       }
-       else{
-           try
-           {
-                createCompte(idc,con);
-                Compte c=this.comptes.get(idc);
-                return c.getOperations(idc);
-           }
-           catch (RemoteException ex)
-           {
-               Logger.getLogger(ImplCompteFactory.class.getName()).log(Level.SEVERE, null, ex);
-           }
-            catch (SQLException ex)
-            {
-                Logger.getLogger(ImplCompteFactory.class.getName()).log(Level.SEVERE, null, ex);
-            }
-           
-       }
-        return ope;
-    }
+    
+  
     @Override
     public int createAccount(double solde){
-        Compte c=new Compte(con);
+        ImplCompte c=new ImplCompte(con);
         int num=c.createAccount(solde);
         c.setAccountId(num);
         comptes.put(num, c);

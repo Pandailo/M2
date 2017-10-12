@@ -9,7 +9,7 @@ package exercice3;
  *
  * @author Yann
  */
-import comptefactory.CompteFactory;
+import Interfaces.CompteFactory;
 import java.rmi.registry.Registry;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.RemoteException;
