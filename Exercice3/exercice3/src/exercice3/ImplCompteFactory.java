@@ -16,8 +16,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.util.Pair;
 
 /**
  * 
@@ -25,56 +27,20 @@ import java.util.logging.Logger;
  */
 public class ImplCompteFactory extends UnicastRemoteObject implements CompteFactory 
 {
-    private Connection con;
+    ConnectionPool cp;
     Hashtable<Integer, Compte> comptes    = new Hashtable<Integer, Compte>();
-    protected static final String LOGIN ="yv965015";
-    protected static final String PASS ="yv965015";
-    protected static final String URLFAC ="jdbc:oracle:thin:@eluard:1521:ense2017";
-    protected static final String URLDIST="jdbc:oracle:thin:@ufrsciencestech.u-bourgogne.fr:25559:ense2017";
+    private List<Pair<Connection,Integer>> distrCon = new ArrayList<>();
 
-    public ImplCompteFactory() throws SQLException, RemoteException, ClassNotFoundException
-    {
+    private final int  SEUIL = 5;
+
+    public ImplCompteFactory() throws SQLException, RemoteException, ClassNotFoundException{
         super();
-        initCo();
+        cp = new ConnectionPool();
+        distrCon.add(new Pair(cp.getConnection(),0));
     }
-    private void initCo() throws  ClassNotFoundException, RemoteException
-    {
-        Connection con=null;
-        try 
-        {
-                con=getConnexion(URLFAC);
-        } 
-         catch (ClassNotFoundException ex)
-        {
-            Logger.getLogger(ImplCompteFactory.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        this.con= con;
-    }
-     private static Connection getConnexion(String url) throws  ClassNotFoundException, RemoteException
-    {
-        Connection con=null;
-        Class.forName("oracle.jdbc.driver.OracleDriver");
-        try
-        {
-            con = DriverManager.getConnection(url, LOGIN, PASS);
-        }
-        catch (SQLException ex)
-        {
-            Logger.getLogger(ImplCompteFactory.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return con;
-    }
-
+  
     private Compte createCompte(int num,Connection con) throws RemoteException{
-        try
-        {
-            this.initCo();
-            
-        }
-        catch (ClassNotFoundException ex)
-        {
-            Logger.getLogger(ImplCompteFactory.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
         Compte c = new ImplCompte(num,con);
         comptes.put(num, c);
         return c;
@@ -83,9 +49,29 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
     @Override
     public Compte getCompte(int num) throws RemoteException
     {
-        
+       boolean nouvCo = true;
        if(!comptes.containsKey(num)){
-           createCompte(num,con);
+           for(int i=0;i<distrCon.size();i++)
+           {
+               if(distrCon.get(i).getValue()<SEUIL){
+                    createCompte(num,distrCon.get(i).getKey());  
+                    distrCon.set(i,new Pair(distrCon.get(i).getKey(),distrCon.get(i).getValue()+1));
+                    if(distrCon.get(i).getValue()<SEUIL){
+                        nouvCo = false;
+                    }
+                    return (Compte)comptes.get(num);
+               }
+           }
+            if(nouvCo){
+               try {
+                   Connection c=cp.getConnection();
+                   distrCon.add(new Pair(c,1));
+                   createCompte(num,c); 
+               }
+               catch (SQLException ex) {
+                   Logger.getLogger(ImplCompteFactory.class.getName()).log(Level.SEVERE, null, ex);
+               }
+           }
        }
        return (Compte)comptes.get(num);
     }
