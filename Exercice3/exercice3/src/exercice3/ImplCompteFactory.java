@@ -28,7 +28,7 @@ import javafx.util.Pair;
 public class ImplCompteFactory extends UnicastRemoteObject implements CompteFactory 
 {
     ConnectionPool cp;
-    Hashtable<Integer, Compte> comptes    = new Hashtable<Integer, Compte>();
+    Hashtable<Integer, ImplCompte> comptes    = new Hashtable();
     private List<Pair<Connection,Integer>> distrCon = new ArrayList<>();
 
     private final int  SEUIL = 5;
@@ -41,7 +41,7 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
   
     private Compte createCompte(int num,Connection con) throws RemoteException{
         
-        Compte c = new ImplCompte(num,con);
+        ImplCompte c = new ImplCompte(num,con);
         comptes.put(num, c);
         return c;
     }
@@ -79,10 +79,34 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
   
     @Override
     public int createAccount(double solde){
+        
         int num = -1;
+        Connection con=null;
         try
         {
-            Compte c=new ImplCompte(con);
+            boolean nouvCo = true;
+            for(int i=0;i<distrCon.size();i++)
+            {
+                if(distrCon.get(i).getValue()<SEUIL){
+                     if(distrCon.get(i).getValue()<SEUIL){
+                         con= distrCon.get(i).getKey();
+                         distrCon.set(i,new Pair(distrCon.get(i).getKey(),distrCon.get(i).getValue()+1));
+                         nouvCo = false;
+                     }
+                }
+            }
+            if(nouvCo){
+               try {
+                   Connection c=cp.getConnection();
+                   distrCon.add(new Pair(c,1));
+                   con=c;
+               }
+               catch (SQLException ex) {
+                   Logger.getLogger(ImplCompteFactory.class.getName()).log(Level.SEVERE, null, ex);
+               }
+            }
+            
+            ImplCompte c=new ImplCompte(con);
             num=c.createAccount(solde);
             c.setAccountId(num);
             comptes.put(num, c);

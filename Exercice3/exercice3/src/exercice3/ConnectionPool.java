@@ -34,8 +34,8 @@ import java.util.LinkedList;
             return LOGIN;
         }
 
-        public ConnectionPool() throws SQLException {
-
+        public ConnectionPool() throws SQLException, ClassNotFoundException {
+            Class.forName("oracle.jdbc.driver.OracleDriver");
             for (int i = 0; i < INITIAL_CAPACITY; i++) {
                 try{
                     pool.add(DriverManager.getConnection(URLFAC, LOGIN, PASS));

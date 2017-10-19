@@ -74,7 +74,7 @@ public class ImplCompte extends UnicastRemoteObject implements Compte
     }
 
     @Override
-    public int getAccountId() 
+    public synchronized int getAccountId() 
     {
         return accountId;
     }
@@ -86,18 +86,18 @@ public class ImplCompte extends UnicastRemoteObject implements Compte
     }
 
     @Override
-    public void setSolde(double solde)
+    public synchronized void setSolde(double solde)
     {
         this.solde = solde;
     }
 
     @Override
-    public void setAccountId(int accountId)
+    public synchronized void setAccountId(int accountId)
     {
         this.accountId = accountId;
     }
 
-    public void operation(double montant,String type)
+    public synchronized void operation(double montant,String type)
     {
         int accountId=this.getAccountId();
         if("depot"==type){
@@ -157,7 +157,7 @@ public class ImplCompte extends UnicastRemoteObject implements Compte
         return operations;
     }
     @Override
-    public int createAccount(double solde){
+    public synchronized int createAccount(double solde){
         int accountId = -1;
         CallableStatement st;
         Connection con=this.con;
