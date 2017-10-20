@@ -74,7 +74,7 @@ public class ImplCompte extends UnicastRemoteObject implements Compte
     }
 
     @Override
-    public synchronized int getAccountId() 
+    public int getAccountId() 
     {
         return accountId;
     }

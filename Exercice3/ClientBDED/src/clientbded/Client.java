@@ -41,6 +41,10 @@ public class Client
 		System.out.println("Compte recu, depot effectue de 200, solde :"+c2.getSolde());
                 c2.retrait(400);
 		System.out.println("Compte recu, retrait effectue de 400,solde :"+c2.getSolde());
+                Compte c3=cf.getCompte(2000);
+                c3.retrait(400);
+		System.out.println("Compte recu, retrait effectue de 400,solde :"+c3.getSolde());            
+                cf.freeAccount(2000);
 	}
 	catch (NotBoundException | RemoteException e){
             System.err.println("Erreur :"+e);

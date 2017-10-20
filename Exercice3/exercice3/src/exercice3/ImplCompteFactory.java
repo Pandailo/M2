@@ -28,7 +28,7 @@ import javafx.util.Pair;
 public class ImplCompteFactory extends UnicastRemoteObject implements CompteFactory 
 {
     ConnectionPool cp;
-    Hashtable<Integer, ImplCompte> comptes    = new Hashtable();
+    Hashtable<Integer, Pair<ImplCompte,Integer>> comptes    = new Hashtable();
     private List<Pair<Connection,Integer>> distrCon = new ArrayList<>();
 
     private final int  SEUIL = 5;
@@ -42,7 +42,7 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
     private Compte createCompte(int num,Connection con) throws RemoteException{
         
         ImplCompte c = new ImplCompte(num,con);
-        comptes.put(num, c);
+        comptes.put(num, new Pair(c,1));
         return c;
     }
 
@@ -59,7 +59,7 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
                     if(distrCon.get(i).getValue()<SEUIL){
                         nouvCo = false;
                     }
-                    return (Compte)comptes.get(num);
+                    return (Compte)comptes.get(num).getKey();
                }
            }
             if(nouvCo){
@@ -73,13 +73,13 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
                }
            }
        }
-       return (Compte)comptes.get(num);
+       comptes.replace(num, new Pair(comptes.get(num).getKey(),comptes.get(num).getValue()+1));
+       return (Compte)comptes.get(num).getKey();
     }
     
   
     @Override
     public int createAccount(double solde){
-        
         int num = -1;
         Connection con=null;
         try
@@ -109,7 +109,7 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
             ImplCompte c=new ImplCompte(con);
             num=c.createAccount(solde);
             c.setAccountId(num);
-            comptes.put(num, c);
+            comptes.put(num, new Pair(c,1));
 
         }
         catch (RemoteException ex)
@@ -118,5 +118,17 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
         }
         return num;
     }
-
+    
+    @Override
+    public void freeAccount(int num){
+        if(comptes.contains(num)){
+            if(comptes.get(num).getValue()>1){
+                distrCon.set(num,new Pair(distrCon.get(num).getKey(),distrCon.get(num).getValue()-1));
+            }
+            else{
+                distrCon.remove(num);
+            }
+        }
+        System.out.println("il reste "+comptes.get(num).getValue()+"comptes"+num);
+    }
 }

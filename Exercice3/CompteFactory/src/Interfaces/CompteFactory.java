@@ -18,5 +18,6 @@ public interface CompteFactory extends Remote
 {
     public Compte getCompte(int num) throws RemoteException;
     public int createAccount(double solde)throws RemoteException;
+    public void freeAccount(int num) throws RemoteException;
 }
 
