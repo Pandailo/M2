@@ -38,13 +38,15 @@ public class Client
                 Compte c2=cf.getCompte(1);
 		System.out.println("Compte créé, id  :"+num);
                 c2.depot(200);
-		System.out.println("Compte recu, depot effectue de 200, solde :"+c2.getSolde());
+		System.out.println("Compte 2 recu, depot effectue de 200, solde :"+c2.getSolde());
                 c2.retrait(400);
-		System.out.println("Compte recu, retrait effectue de 400,solde :"+c2.getSolde());
-                Compte c3=cf.getCompte(2000);
+		System.out.println("Compte  recu, retrait effectue de 400,solde :"+c2.getSolde());
+                Compte c3=cf.getCompte(250);
+                System.out.println("Compte recu, solde initial de :"+c3.getSolde());   
                 c3.retrait(400);
 		System.out.println("Compte recu, retrait effectue de 400,solde :"+c3.getSolde());            
-                cf.freeAccount(2000);
+                cf.freeAccount(250);
+                cf.freeAccount(250);
 	}
 	catch (NotBoundException | RemoteException e){
             System.err.println("Erreur :"+e);

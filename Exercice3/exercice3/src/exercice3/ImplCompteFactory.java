@@ -39,8 +39,7 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
         distrCon.add(new Pair(cp.getConnection(),0));
     }
   
-    private Compte createCompte(int num,Connection con) throws RemoteException{
-        
+    private Compte createCompte(int num,Connection con) throws RemoteException{     
         ImplCompte c = new ImplCompte(num,con);
         comptes.put(num, new Pair(c,1));
         return c;
@@ -74,6 +73,7 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
            }
        }
        comptes.replace(num, new Pair(comptes.get(num).getKey(),comptes.get(num).getValue()+1));
+       System.out.println("compte : "+comptes.get(num).getKey()+" nb use : "+comptes.get(num).getValue());
        return (Compte)comptes.get(num).getKey();
     }
     
@@ -124,11 +124,12 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
         if(comptes.contains(num)){
             if(comptes.get(num).getValue()>1){
                 distrCon.set(num,new Pair(distrCon.get(num).getKey(),distrCon.get(num).getValue()-1));
+                comptes.put(num,new Pair(comptes.get(num).getKey(),comptes.get(num).getValue()-1));
             }
             else{
                 distrCon.remove(num);
             }
+            System.out.println("il reste "+comptes.get(num).getValue()+"comptes"+num);
         }
-        System.out.println("il reste "+comptes.get(num).getValue()+"comptes"+num);
     }
 }
