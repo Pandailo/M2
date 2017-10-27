@@ -46,7 +46,7 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
     }
 
     @Override
-    public Compte getCompte(int num) throws RemoteException
+    public synchronized Compte getCompte(int num) throws RemoteException
     {
        boolean nouvCo = true;
        if(!comptes.containsKey(num)){
@@ -78,6 +78,7 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
   
     @Override
     public int createAccount(double solde){
+        //Création d'un nouveau compte de solde @solde
         int num = -1;
         Connection con=null;
         try
@@ -118,7 +119,7 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
     }
     
     @Override
-    public void freeAccount(int num){
+    public synchronized void freeAccount(int num){
         System.out.println("exercice3.ImplCompteFactory.freeAccount()");
         //Si le compte existe
         if(comptes.containsKey(num)){
