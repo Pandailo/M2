@@ -7,16 +7,13 @@ package exercice3;
 
 import Interfaces.Compte;
 import Interfaces.CompteFactory;
-import java.rmi.Naming;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.util.Pair;
@@ -27,8 +24,8 @@ import javafx.util.Pair;
  */
 public class ImplCompteFactory extends UnicastRemoteObject implements CompteFactory 
 {
-    ConnectionPool cp;
-    Hashtable<Integer, Pair<ImplCompte,Integer>> comptes    = new Hashtable();
+    private ConnectionPool cp;
+    private Hashtable<Integer, Pair<ImplCompte,Integer>> comptes    = new Hashtable();
     private List<Pair<Connection,Integer>> distrCon = new ArrayList<>();
 
     private final int  SEUIL = 5;
@@ -56,6 +53,7 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
                     Compte c =createCompte(num,distrCon.get(i).getKey());  
                     System.out.println("");
                     distrCon.set(i,new Pair(distrCon.get(i).getKey(),distrCon.get(i).getValue()+1));
+                    System.out.println("compte : "+comptes.get(num).getKey().getAccountId()+" nb use : "+comptes.get(num).getValue());
                     return c;
                }
            }
@@ -77,7 +75,7 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
     
   
     @Override
-    public int createAccount(double solde){
+    public synchronized int createAccount(double solde){
         //Création d'un nouveau compte de solde @solde
         int num = -1;
         Connection con=null;
@@ -120,7 +118,6 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
     
     @Override
     public synchronized void freeAccount(int num){
-        System.out.println("exercice3.ImplCompteFactory.freeAccount()");
         //Si le compte existe
         if(comptes.containsKey(num)){
             if(comptes.get(num).getValue()>1){
@@ -137,7 +134,7 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
                     }
                 }
                 
-                System.out.println("il reste "+(comptes.get(num).getValue()-1)+"comptes"+num);
+                System.out.println("il reste "+(comptes.get(num).getValue()-1)+" comptes "+num);
                 //on l'enlève de la liste 
                 comptes.remove(num);
             }

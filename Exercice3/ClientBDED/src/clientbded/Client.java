@@ -11,6 +11,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.List;
 
 /**
  *
@@ -28,12 +29,11 @@ public class Client
 		System.out.println("Compte recu, depot effectue de 200, solde :"+c.getSolde());
                 c.retrait(400);
 		System.out.println("Compte recu, retrait effectue de 400,solde :"+c.getSolde());
-               /* 
-                List ope=cf.getOperations(1);
+                System.out.println("Récupération des opérations du compte : "+c.getAccountId());
+                List ope=c.getOperations();
                 for(int i = 0;i<ope.size();i++){
                     System.out.println("Operation "+i+" : "+ope.get(i)+"\n");
                 }
-                */
                 int num=cf.createAccount(2000);
                 Compte c2=cf.getCompte(1);
 		System.out.println("Compte créé, id  :"+num);
