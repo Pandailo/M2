@@ -53,12 +53,10 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
            for(int i=0;i<distrCon.size();i++)
            {
                if(distrCon.get(i).getValue()<SEUIL){
-                    createCompte(num,distrCon.get(i).getKey());  
+                    Compte c =createCompte(num,distrCon.get(i).getKey());  
+                    System.out.println("");
                     distrCon.set(i,new Pair(distrCon.get(i).getKey(),distrCon.get(i).getValue()+1));
-                    if(distrCon.get(i).getValue()<SEUIL){
-                        nouvCo = false;
-                    }
-                    return (Compte)comptes.get(num).getKey();
+                    return c;
                }
            }
             if(nouvCo){
@@ -72,8 +70,8 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
                }
            }
        }
-       comptes.replace(num, new Pair(comptes.get(num).getKey(),comptes.get(num).getValue()+1));
-       System.out.println("compte : "+comptes.get(num).getKey()+" nb use : "+comptes.get(num).getValue());
+       comptes.replace(num, new Pair(comptes.get(num).getKey(),comptes.get(num).getValue()+1));      
+       System.out.println("compte : "+comptes.get(num).getKey().getAccountId()+" nb use : "+comptes.get(num).getValue());
        return (Compte)comptes.get(num).getKey();
     }
     
@@ -121,15 +119,27 @@ public class ImplCompteFactory extends UnicastRemoteObject implements CompteFact
     
     @Override
     public void freeAccount(int num){
-        if(comptes.contains(num)){
+        System.out.println("exercice3.ImplCompteFactory.freeAccount()");
+        //Si le compte existe
+        if(comptes.containsKey(num)){
             if(comptes.get(num).getValue()>1){
-                distrCon.set(num,new Pair(distrCon.get(num).getKey(),distrCon.get(num).getValue()-1));
-                comptes.put(num,new Pair(comptes.get(num).getKey(),comptes.get(num).getValue()-1));
+                //s'il est utilisé plus d'une fois on décrémente son nb d'utilisation
+                comptes.put(num,new Pair(comptes.get(num).getKey(),comptes.get(num).getValue()-1));           
+                System.out.println("il reste "+comptes.get(num).getValue()+"comptes"+num);
             }
             else{
-                distrCon.remove(num);
+                //si on veut libérer son unique utilisation
+                for(int i=0;i<distrCon.size();i++){
+                    //on décrémente le nb d'utilisation de la connexion qu'il utilise
+                    if(distrCon.get(i).getKey().equals(comptes.get(num).getKey().getCon())){
+                        distrCon.set(i,new Pair(distrCon.get(i).getKey(),distrCon.get(i).getValue()-1));
+                    }
+                }
+                
+                System.out.println("il reste "+(comptes.get(num).getValue()-1)+"comptes"+num);
+                //on l'enlève de la liste 
+                comptes.remove(num);
             }
-            System.out.println("il reste "+comptes.get(num).getValue()+"comptes"+num);
         }
     }
 }

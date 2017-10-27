@@ -97,6 +97,10 @@ public class ImplCompte extends UnicastRemoteObject implements Compte
         this.accountId = accountId;
     }
 
+    public Connection getCon(){
+        return this.con;
+    }
+    
     public synchronized void operation(double montant,String type)
     {
         int accountId=this.getAccountId();

@@ -277,7 +277,7 @@
     </java>
   </target>
 
-  <!-- Setup the classic configuration -->
+  <!-- Setup the classic configuration modified -->
   <target name="classic_admin" depends="simple_init"
           description="--> Runs administration code for classic sample (centralized architecture)">
     <java classname="classic.ClassicAdmin"

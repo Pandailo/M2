@@ -40,11 +40,11 @@ public class Client
                 c2.depot(200);
 		System.out.println("Compte 2 recu, depot effectue de 200, solde :"+c2.getSolde());
                 c2.retrait(400);
-		System.out.println("Compte  recu, retrait effectue de 400,solde :"+c2.getSolde());
+		System.out.println("Compte  400 recu, retrait effectue de 400,solde :"+c2.getSolde());
                 Compte c3=cf.getCompte(250);
-                System.out.println("Compte recu, solde initial de :"+c3.getSolde());   
+                System.out.println("Compte 250 recu, solde initial de :"+c3.getSolde());   
                 c3.retrait(400);
-		System.out.println("Compte recu, retrait effectue de 400,solde :"+c3.getSolde());            
+		System.out.println("Compte recu 250, retrait effectue de 400,solde :"+c3.getSolde());            
                 cf.freeAccount(250);
                 cf.freeAccount(250);
 	}
