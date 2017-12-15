@@ -43,7 +43,7 @@ public class MyClassicAdmin {
     System.out.println();
     System.out.println("Classic administration...");
 
-    ConnectionFactory cf = TcpConnectionFactory.create("172.31.18.54", 16010);
+    ConnectionFactory cf = TcpConnectionFactory.create("172.31.18.85", 16010);
     AdminModule.connect(cf, "root", "root");
 
     Queue queue = Queue.create("queue");
@@ -56,15 +56,15 @@ public class MyClassicAdmin {
     User.create("anonymous", "anonymous");
 
 //    ((org.objectweb.joram.client.jms.ConnectionFactory) cf).getParameters().addOutInterceptor("classic.Interceptor");
-    QueueConnectionFactory qcf = TcpConnectionFactory.create("172.31.18.54", 16010);
-    TopicConnectionFactory tcf = TcpConnectionFactory.create("172.31.18.54", 16010);
+    QueueConnectionFactory qcf = TcpConnectionFactory.create("172.31.18.85", 16010);
+    TopicConnectionFactory tcf = TcpConnectionFactory.create("172.31.18.85", 16010);
 
     javax.naming.Context jndiCtx = new javax.naming.InitialContext();
-    jndiCtx.bind("cf", cf);
-    jndiCtx.bind("qcf", qcf);
-    jndiCtx.bind("tcf", tcf);
-    jndiCtx.bind("queue", queue);
-    jndiCtx.bind("topic", topic);
+    jndiCtx.bind("mcf", cf);
+    jndiCtx.bind("mqcf", qcf);
+    jndiCtx.bind("mtcf", tcf);
+    jndiCtx.bind("mqueue", queue);
+    jndiCtx.bind("mtopic", topic);
     jndiCtx.close();
 
     AdminModule.disconnect();

@@ -36,8 +36,8 @@ public class MySender {
     System.out.println("Sends messages on the queue from modified sender...");
 
     ictx = new InitialContext();
-    Queue queue = (Queue) ictx.lookup("queue");
-    QueueConnectionFactory qcf = (QueueConnectionFactory) ictx.lookup("qcf");
+    Queue queue = (Queue) ictx.lookup("mqueue");
+    QueueConnectionFactory qcf = (QueueConnectionFactory) ictx.lookup("mqcf");
     ictx.close();
 
     QueueConnection cnx = qcf.createQueueConnection();
